@@ -25,9 +25,9 @@ namespace GeekBurger.Ingredients.Service
             var productsByStore = await _productRepository.GetProductsByStoreName(request.StoreName);
             //Estoura erro quando mapeia
             //var products = _mapper.Map<List<Product>>(productsByStore);
-            var itemsRetrictions = _mapper.Map<List<ItemToGet>>(request.Restrictions);
+            var itemsRestrictions = request.Restrictions;
 
-            var productsByRestriction = productsByStore.Where(x => x.Items.All(y => itemsRetrictions != x.Items));
+            var productsByRestriction = productsByStore.Where(x => x.Items.All(y => !itemsRestrictions.Contains(y.Name))).ToList();
             var response = _mapper.Map<List<IngredientsResponse>>(productsByRestriction);
 
             return response;

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using GeekBurger.Ingredients.Contract.DTO;
 using GeekBurger.Ingredients.Interface;
+using GeekBurger.Products.Contract;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;

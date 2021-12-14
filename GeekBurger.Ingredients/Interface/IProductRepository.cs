@@ -1,4 +1,5 @@
 ﻿using GeekBurger.Ingredients.Contract.DTO;
+using GeekBurger.Products.Contract;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

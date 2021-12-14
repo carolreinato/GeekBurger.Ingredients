@@ -9,6 +9,6 @@ namespace GeekBurger.Ingredients.Contract.DTO
     public class IngredientsResponse
     {
         public Guid ProductId { get; set; }
-        public List<ItemToGet> Ingredients { get; set; }
+        public List<string> Ingredients { get; set; }
     }
 }
