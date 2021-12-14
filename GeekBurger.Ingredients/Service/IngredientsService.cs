@@ -20,14 +20,15 @@ namespace GeekBurger.Ingredients.Service
             _mapper = mapper;
         }
 
-        public async Task<List<ProductToGet>> GetProductsByRestrictions(IngredientsRequest request)
+        public async Task<List<IngredientsResponse>> GetProductsByRestrictions(IngredientsRequest request)
         {
             var productsByStore = await _productRepository.GetProductsByStoreName(request.StoreName);
-            var products = _mapper.Map<List<Product>>(productsByStore);
-            var itemsRetrictions = _mapper.Map<List<Item>>(request.Restrictions);
+            //Estoura erro quando mapeia
+            //var products = _mapper.Map<List<Product>>(productsByStore);
+            var itemsRetrictions = _mapper.Map<List<ItemToGet>>(request.Restrictions);
 
-            var productsByRestriction = products.Where(x => x.Items.All(y => itemsRetrictions != x.Items));
-            var response = _mapper.Map<List<ProductToGet>>(productsByRestriction);
+            var productsByRestriction = productsByStore.Where(x => x.Items.All(y => itemsRetrictions != x.Items));
+            var response = _mapper.Map<List<IngredientsResponse>>(productsByRestriction);
 
             return response;
         }

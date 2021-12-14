@@ -6,6 +6,6 @@ namespace GeekBurger.Ingredients.Interface
 {
     public interface IIngredientsService
     {
-        Task<List<ProductToGet>> GetProductsByRestrictions(IngredientsRequest request);
+        Task<List<IngredientsResponse>> GetProductsByRestrictions(IngredientsRequest request);
     }
 }
