@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="3.2.0" />
+    <PackageReference Include="FluentValidation" Version="10.3.6" />
     <PackageReference Include="GeekBurger.Products.Contract" Version="1.0.2" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />

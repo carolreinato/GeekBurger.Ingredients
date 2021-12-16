@@ -18,7 +18,7 @@ namespace GeekBurger.Ingredients.Controllers
             var response = service.GetProductsByRestrictions(request).Result;
             if (response != null)
                 return Ok(response);
-            return NotFound("Nenhum produto encontrado");
+            return NotFound("Nenhum produto encontrado.");
         }
     }
 }

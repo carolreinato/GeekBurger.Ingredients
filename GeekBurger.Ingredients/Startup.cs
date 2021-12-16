@@ -15,6 +15,7 @@ using AutoMapper;
 using GeekBurger.Ingredients.Interface;
 using GeekBurger.Ingredients.Service;
 using GeekBurger.Ingredients.Repository;
+using GeekBurger.Ingredients.Validations;
 
 namespace GeekBurger.Ingredients
 {
@@ -39,6 +40,7 @@ namespace GeekBurger.Ingredients
             services.AddAutoMapper();
             services.AddScoped<IIngredientsService, IngredientsService>();
             services.AddSingleton<IProductRepository, ProductRepository>();
+            services.AddScoped<IIngredientsRequestValidator, IngredientsRequestValidator>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
