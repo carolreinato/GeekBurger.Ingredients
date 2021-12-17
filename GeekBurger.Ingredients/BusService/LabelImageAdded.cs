@@ -1,4 +1,5 @@
-﻿using Microsoft.Azure.Management.ServiceBus.Fluent;
+﻿using GeekBurger.Ingredients.Interface;
+using Microsoft.Azure.Management.ServiceBus.Fluent;
 using Microsoft.Azure.ServiceBus;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -12,21 +13,13 @@ using System.Threading.Tasks;
 
 namespace GeekBurger.Ingredients.BusService
 {
-    public class LabelImageAdded
+    public static class LabelImageAdded 
     {
         private const string TopicName = "labelimageadded";
         private static IConfiguration _configuration;
-        private const string SubscriptionName = "labelimageadded";
-        private readonly IServiceBusNamespace _serviceBusNamespace;
-        private readonly ServiceBusConfiguration _serviceBusConfiguration;
-
-        public LabelImageAdded(IConfiguration configuration, IOptions<ServiceBusConfiguration> config)
-        {
-            _configuration = configuration;
-
-            _serviceBusConfiguration = config.Value; //configuration.GetSection("serviceBus").Get<ServiceBusConfiguration>();
-            _serviceBusNamespace = _configuration.GetServiceBusNamespace();
-        }
+        private const string SubscriptionName = "GRUPO666";
+        private static readonly IServiceBusNamespace _serviceBusNamespace;
+        private static readonly ServiceBusConfiguration _serviceBusConfiguration;    
 
         //public void EnsureTopicIsCreated()
         //{
@@ -56,9 +49,11 @@ namespace GeekBurger.Ingredients.BusService
         //        .Create();
         //}
 
-        private static async void ReceiveMessages()
+        public static async Task ReceiveMessages(IConfiguration _configuration)
         {
-            var subscriptionClient = new SubscriptionClient(_configuration["serviceBus:connectionString"], TopicName, SubscriptionName);
+            try {
+                var connection = _configuration["serviceBus:connectionString"];
+            var subscriptionClient = new SubscriptionClient(connection, TopicName, SubscriptionName);
 
             //await subscriptionClient.RemoveRuleAsync("$Default");
 
@@ -71,8 +66,11 @@ namespace GeekBurger.Ingredients.BusService
             var mo = new MessageHandlerOptions(ExceptionHandler) { AutoComplete = true };
 
             subscriptionClient.RegisterMessageHandler(MessageHandler, mo);
-
-            Console.ReadLine();
+            }
+            catch(Exception x)
+            {
+                Console.WriteLine(x);
+            }
         }
 
         private static Task MessageHandler(Message message, CancellationToken arg2)

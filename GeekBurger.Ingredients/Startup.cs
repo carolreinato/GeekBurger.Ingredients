@@ -16,6 +16,8 @@ using GeekBurger.Ingredients.Interface;
 using GeekBurger.Ingredients.Service;
 using GeekBurger.Ingredients.Repository;
 using GeekBurger.Ingredients.Validations;
+using GeekBurger.Ingredients.BusService;
+using System.Threading;
 
 namespace GeekBurger.Ingredients
 {
@@ -64,6 +66,8 @@ namespace GeekBurger.Ingredients
             {
                 endpoints.MapControllers();
             });
+
+            Task.Run(() => LabelImageAdded.ReceiveMessages(Configuration));
         }
     }
 }
