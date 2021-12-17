@@ -20,8 +20,9 @@ namespace GeekBurger.Ingredients.Repository
 
             using (var client = new HttpClient())
             {
-                UriBuilder builder = new UriBuilder($"https://geekburgerproducts20211212122844.azurewebsites.net/api/products/{storeName}");
-                builder.Query = storeName;
+                //UriBuilder builder = new UriBuilder($"https://geekburgerproducts20211212122844.azurewebsites.net/api/products/{storeName}");
+                UriBuilder builder = new UriBuilder($"https://geekburger-products.azurewebsites.net/api/products?storeName={storeName}");
+                //builder.Query = storeName;
 
                 var response = await client.GetAsync(builder.Uri);
                 if (response.StatusCode != HttpStatusCode.OK)
