@@ -68,6 +68,7 @@ namespace GeekBurger.Ingredients
             });
 
             Task.Run(() => LabelImageAdded.ReceiveMessages(Configuration));
+            Task.Run(() => ProductChanged.ReceiveMessages(Configuration));
         }
     }
 }
