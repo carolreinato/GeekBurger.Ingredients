@@ -33,7 +33,6 @@ namespace GeekBurger.Ingredients
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
@@ -43,6 +42,9 @@ namespace GeekBurger.Ingredients
             services.AddScoped<IIngredientsService, IngredientsService>();
             services.AddSingleton<IProductRepository, ProductRepository>();
             services.AddScoped<IIngredientsRequestValidator, IngredientsRequestValidator>();
+
+            services.AddSingleton<ILabelImageConsumer, LabelImageConsumer>();
+            services.AddSingleton<IProductConsumer, ProductConsumer>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,8 +69,12 @@ namespace GeekBurger.Ingredients
                 endpoints.MapControllers();
             });
 
-            Task.Run(() => LabelImageAdded.ReceiveMessages(Configuration));
-            Task.Run(() => ProductChanged.ReceiveMessages(Configuration));
+            var labelImageConsumer = app.ApplicationServices.GetService<ILabelImageConsumer>();
+            Task.Run(() => labelImageConsumer.ReceiveMessages());
+
+            var productConsumer = app.ApplicationServices.GetService<IProductConsumer>();
+            Task.Run(() => productConsumer.ReceiveMessages());
         }
+
     }
 }

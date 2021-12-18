@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
+using Dapper;
 using GeekBurger.Ingredients.Contract.DTO;
 using GeekBurger.Ingredients.Interface;
+using GeekBurger.Ingredients.Model;
 using GeekBurger.Products.Contract;
+using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -14,6 +17,28 @@ namespace GeekBurger.Ingredients.Repository
 {
     public class ProductRepository : IProductRepository
     {
+        public ProductRepository()
+        {
+            _ = CreateTableProductsIngredient();
+        }
+
+        private async Task CreateTableProductsIngredient()
+        {
+            using SqliteConnection con = new SqliteConnection("Data Source=MyDatabase.sqlite;Version=3;");
+            using SqliteCommand command = con.CreateCommand();
+            con.Open();
+            command.CommandText = "SELECT name FROM sqlite_master WHERE name='ProductIngredient'";
+            var name = command.ExecuteScalar();
+
+            // check account table exist or not 
+            // if exist do nothing 
+            if (name != null && name.ToString() == "ProductIngredient")
+                return;
+            // acount table not exist, create table and insert 
+            command.CommandText = "CREATE TABLE ProductIngredient (ProductID VARCHAR(80), StoreName VARCHAR(20), ItemIgredients VARCHAR(2000))";
+            await command.ExecuteNonQueryAsync();
+        }
+
         public async Task<List<ProductToGet>> GetProductsByStoreName(string storeName)
         {
             List<ProductToGet> products = new();
@@ -32,6 +57,30 @@ namespace GeekBurger.Ingredients.Repository
                 return products;
             }
 
+        }
+
+        public async Task<IEnumerable<ProductIngredients>> GetProductIngredients(string storeName)
+        {
+            using var connection = new SqliteConnection("Data Source=ProductsIngredients.db");
+
+            var query = await connection.QueryAsync<ProductIngredients>(@"
+                SELECT *
+                FROM ProductIngredient
+                WHERE StoreName = @storeName
+                ", new { storeName = storeName });
+
+            return query;
+        }
+
+        public async Task UpdateProductIngredients(ProductIngredients productIngredients)
+        {
+            using var connection = new SqliteConnection("Data Source=ProductsIngredients.db");
+
+            await connection.ExecuteAsync(@"INSERT INTO Product (ProductID, StoreName, ItemIgredients)
+                                            VALUES (@Name, @Description);", new { productId = productIngredients.ProductId, 
+                                                                                  storeName = productIngredients.StoreName, 
+                                                                                  itemIgredients = JsonConvert.SerializeObject(productIngredients.ItemIgredients)
+            });
         }
     }
 }

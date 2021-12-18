@@ -5,6 +5,7 @@ using GeekBurger.Ingredients.Contract.DTO;
 using GeekBurger.Ingredients.Interface;
 using GeekBurger.Ingredients.Repository;
 using GeekBurger.Ingredients.Validations;
+using Microsoft.Azure.ServiceBus;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,6 +46,11 @@ namespace GeekBurger.Ingredients.Service
                 }
             }
             return null;
+        }
+
+        public async Task MergeProductAndIngredients(Message message)
+        {
+            throw new NotImplementedException();
         }
     }
 }
