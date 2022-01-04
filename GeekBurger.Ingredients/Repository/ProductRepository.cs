@@ -4,6 +4,7 @@ using GeekBurger.Ingredients.Contract.DTO;
 using GeekBurger.Ingredients.Interface;
 using GeekBurger.Ingredients.Model;
 using GeekBurger.Products.Contract;
+using Microsoft.Azure.ServiceBus;
 using Microsoft.Data.Sqlite;
 using Newtonsoft.Json;
 using System;
@@ -59,15 +60,15 @@ namespace GeekBurger.Ingredients.Repository
 
         }
 
-        public async Task<IEnumerable<ProductIngredients>> GetProductIngredients(string storeName)
+        public async Task<IEnumerable<ProductIngredients>> GetProductIngredients(Guid productId)
         {
             using var connection = new SqliteConnection("Data Source=ProductsIngredients.db");
 
             var query = await connection.QueryAsync<ProductIngredients>(@"
                 SELECT *
                 FROM ProductIngredient
-                WHERE StoreName = @storeName
-                ", new { storeName = storeName });
+                WHERE ProductId = @productId
+                ", new { productId = productId });
 
             return query;
         }
@@ -81,6 +82,11 @@ namespace GeekBurger.Ingredients.Repository
                                                                                   storeName = productIngredients.StoreName, 
                                                                                   itemIgredients = JsonConvert.SerializeObject(productIngredients.ItemIgredients)
             });
+        }
+
+        public Task MergeProductAndIngredients(Message message)
+        {
+            throw new NotImplementedException();
         }
     }
 }

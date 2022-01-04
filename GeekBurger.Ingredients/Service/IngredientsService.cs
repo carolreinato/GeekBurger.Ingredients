@@ -3,6 +3,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using GeekBurger.Ingredients.Contract.DTO;
 using GeekBurger.Ingredients.Interface;
+using GeekBurger.Ingredients.Model;
 using GeekBurger.Ingredients.Repository;
 using GeekBurger.Ingredients.Validations;
 using Microsoft.Azure.ServiceBus;
@@ -34,11 +35,29 @@ namespace GeekBurger.Ingredients.Service
             if (!validate.IsValid)
                 return null;
 
+            List<ItemIgredients> forbiddenItens = new();
+
             var productsByStore = await _productRepository.GetProductsByStoreName(request.StoreName);
 
-            if(productsByStore.Any())
+            if (productsByStore.Any())
             {
-                var productsByRestriction = productsByStore.Where(x => x.Items.All(y => !request.Restrictions.Contains(y.Name))).ToList();
+                foreach (var product in productsByStore)
+                {
+                    var productIngredients = await _productRepository.GetProductIngredients(product.ProductId);
+                    foreach (var itemIngredient in productIngredients.Select(x => x.ItemIgredients))
+                    {
+                        forbiddenItens = itemIngredient
+                            .Where(x => x.Ingredients.All(y => request.Restrictions.Contains(y)))
+                            .ToList();
+                    }
+                }
+                var productsByRestriction = productsByStore
+                    .Where(x => x.Items
+                        .All(y => forbiddenItens
+                            .Select(o => o.ItemId)
+                            .Contains(y.ItemId)))
+                    .ToList();
+
                 if (productsByRestriction.Any())
                 {
                     var response = _mapper.Map<List<IngredientsResponse>>(productsByRestriction);
