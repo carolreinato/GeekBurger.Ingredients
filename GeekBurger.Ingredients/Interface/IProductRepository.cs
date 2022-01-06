@@ -12,6 +12,5 @@ namespace GeekBurger.Ingredients.Interface
         Task<List<ProductToGet>> GetProductsByStoreName(string storeName);
         Task<IEnumerable<ProductIngredients>> GetProductIngredients(Guid productId);
         Task UpdateProductIngredients(ProductIngredients productIngredients);
-        Task MergeProductAndIngredients(Message message);
     }
 }

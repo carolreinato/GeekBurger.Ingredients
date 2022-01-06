@@ -7,9 +7,11 @@ using GeekBurger.Ingredients.Model;
 using GeekBurger.Ingredients.Repository;
 using GeekBurger.Ingredients.Validations;
 using Microsoft.Azure.ServiceBus;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace GeekBurger.Ingredients.Service
@@ -69,7 +71,51 @@ namespace GeekBurger.Ingredients.Service
 
         public async Task MergeProductAndIngredients(Message message)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var productsPaulista = await _productRepository.GetProductsByStoreName("Paulista");
+                var productsMorumbi = await _productRepository.GetProductsByStoreName("Morumbi");
+
+                dynamic item = JsonConvert.DeserializeObject(Encoding.UTF8.GetString(message.Body));
+
+                var products = productsPaulista.Where(x => x.Items.Any(y => y.Name == item.ItemName)).ToList();
+
+                products.AddRange(productsMorumbi.Where(x => x.Items.Any(y => y.Name == item.ItemName)).ToList());
+
+
+                foreach (var p in products)
+                {
+                    var existentProduct = (await _productRepository.GetProductIngredients(p.ProductId)).FirstOrDefault();
+
+                    if (existentProduct != null)
+                    {
+                        existentProduct.ItemIgredients.Add(new ItemIgredients()
+                        {
+                            Ingredients = item.Ingredients,
+                            ItemId = item.ItemName
+                        });
+                        await _productRepository.UpdateProductIngredients(existentProduct);
+                    }
+                    else
+                    {
+                        await _productRepository.UpdateProductIngredients(new ProductIngredients()
+                        {
+                            ProductId = p.ProductId,
+                            StoreName = p.StoreId.ToString() == "8048e9ec-80fe-4bad-bc2a-e4f4a75c834e" ? "Paulista" : "Morumbi",
+                            ItemIgredients = new List<ItemIgredients>() { new ItemIgredients()
+                                                                            {
+                                                                                Ingredients = item.Ingredients,
+                                                                                ItemId = item.ItemName
+                                                                            }
+                                                                        }
+                        });
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
         }
     }
 }

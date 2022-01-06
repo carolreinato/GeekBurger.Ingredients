@@ -78,15 +78,12 @@ namespace GeekBurger.Ingredients.Repository
             using var connection = new SqliteConnection("Data Source=ProductsIngredients.db");
 
             await connection.ExecuteAsync(@"INSERT INTO Product (ProductID, StoreName, ItemIgredients)
-                                            VALUES (@Name, @Description);", new { productId = productIngredients.ProductId, 
-                                                                                  storeName = productIngredients.StoreName, 
-                                                                                  itemIgredients = JsonConvert.SerializeObject(productIngredients.ItemIgredients)
+                                            VALUES (@Name, @Description);", new
+            {
+                productId = productIngredients.ProductId,
+                storeName = productIngredients.StoreName,
+                itemIgredients = JsonConvert.SerializeObject(productIngredients.ItemIgredients)
             });
-        }
-
-        public Task MergeProductAndIngredients(Message message)
-        {
-            throw new NotImplementedException();
         }
     }
 }
